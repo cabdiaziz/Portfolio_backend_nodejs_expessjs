@@ -11,4 +11,4 @@ I perpared this node server to start smoothly.
 
 -.env file used to set the secrite date or private data.
 
--.env file i will remove it from github when you clone this project success.
+-NOTE: (.env) file I will remove it from github when you clone this project successfully.

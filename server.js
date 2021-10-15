@@ -1,10 +1,8 @@
 const express = require("express");
-const morgan = require("morgan"); //tell you the status of your request.
+const morgan = require("morgan");
 
-const SkillRouter = require("./routes/SkillRoute");
-const express = require("express");
-const morgan = require("morgan"); //tell you the status of your request.
 const adminRoutes = require("./routes/admin_route");
+const SkillRouter = require("./routes/SkillRoute");
 
 require("./config/db");
 

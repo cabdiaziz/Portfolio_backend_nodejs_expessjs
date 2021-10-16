@@ -28,14 +28,14 @@ const admin_create = async (req, res) => {
                return res.status(400).send({errMsg: 'confirm must match password'})   
 
              newAdmin.password = hash
-             newAdmin.password_confirm = hash
+             newAdmin.password_confirm = newAdmin.password;
             
              await newAdmin.save()
              res.status(201).send(_.pick(newAdmin, ['name', 'email','address','phone','gender','status']));
         }
        });
     }catch(err){
-        return res.status(500).send({ err });
+      for (field in err.occur) res.status(400).json(err.occur[field].message);
     }
 }
 
@@ -44,10 +44,7 @@ const admin_login = async (req, res) => {
     if(error) return res.status(400).send(error.details[0].message); // test tostring function.
   try{
     const admin = await Admin.checkPassword(req.body.email, req.body.password);
-   
-    //found admin/user
-                //check admin type. == 'admin' || 'user'
-                //if admin or user.
+    if(admin.status !== 'active') return res.status(401).send('Please authenticate.')
    
     if (!admin) return res.status(401).send('invalid email or password')
 
@@ -57,7 +54,7 @@ const admin_login = async (req, res) => {
     await admin.save();
     res.status(200).send(_.pick(admin, ['name', 'email','address','phone','gender','status']))
   }catch(err){
-    return res.status(500).send({ err })
+    for (field in err.occur) res.status(400).json(err.occur[field].message);
   }
 }
 
@@ -73,8 +70,7 @@ const logout_accout = async (req, res) => {
       await req.admin.save()
       res.status(200).send('logout seccesfully')
     }catch(err){
-      console.log(err)
-      return res.status(500).send({err})
+      for (field in err.occur) res.status(400).json(err.occur[field].message);
     }
 }
 
@@ -85,9 +81,38 @@ const logout_allaccounts = async (req, res) =>{
     
     res.status(200).send('Loged out for all devices')
   }catch(err){
-    console.log(err);
-    return res.status(500).send({err})
+    for (field in err.occur) res.status(400).json(err.occur[field].message);
   }
+}
+
+const delete_myProfile = async (req, res) => {
+  try{
+    req.admin.status = 'inactive';
+    await req.admin.save()
+    res.status(200).send('Account has been deleted.')
+
+  }catch(err){
+    for (field in err.occur) res.status(400).json(err.occur[field].message);
+  }
+}
+
+const update_myProfile = async (req, res) => {
+
+  const updates = Object.keys(req.body)
+  const allowedUpdates = ['name', 'email','address','phone','gender','type'];
+  const isValidUpdate = updates.every((update) => allowedUpdates.includes(update))
+  
+  if(!isValidUpdate) return res.status(400).send({Error:'Invalid updates.!'})
+
+  try{
+    updates.forEach((update) => req.admin[update] = req.body[update])
+    await req.admin.save()
+    res.status(200).send(req.admin)
+  }catch(err){
+    for (field in err.occur) res.status(400).json(err.occur[field].message);
+  }
+
+
 }
 
 
@@ -129,5 +154,7 @@ module.exports ={
     admin_login,
     admin_profile,
     logout_accout,
-    logout_allaccounts
+    logout_allaccounts,
+    delete_myProfile,
+    update_myProfile
 }

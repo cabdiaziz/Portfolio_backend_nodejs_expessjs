@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const cookieParser = require('cookie-parser');
+require('express-async-errors');
 
 const adminRoutes = require('./routes/admin_route');
 const SkillRouter = require("./routes/SkillRoute");

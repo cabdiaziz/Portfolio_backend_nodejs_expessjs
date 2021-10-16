@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
+const cookieParser = require('cookie-parser');
 
 const adminRoutes = require('./routes/admin_route');
 const SkillRouter = require("./routes/SkillRoute");
@@ -17,6 +18,7 @@ const app = express();
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(helmet());
+app.use(cookieParser());
 
 //my API'S from router folder
 app.use('/api/skills', SkillRouter);

@@ -6,10 +6,6 @@ const Joi = require("joi");
 
 //Auth Api functions.
 
-const dashboard = (req, res) => {
-    res.send('Hello, is a json data')
-}
-
 const admin_create = async (req, res) => {
     const {error} = create_adminValidation(req.body);   
     if(error) return res.status(404).send(error.details[0].message.toString())
@@ -20,7 +16,7 @@ const admin_create = async (req, res) => {
             return res.status(500).send({ err });
         }
         else{    
-             const admin = await Admin.findOne({ admin_email: req.body.email })
+             const admin = await Admin.findOne({email: req.body.email })
              if (admin) return res.status(409).send({msg:'user is already created.'})    
 
              const newAdmin = await new Admin(_.pick(req.body, ['name', 'email','address','phone','gender','password','password_confirm']));
@@ -35,7 +31,7 @@ const admin_create = async (req, res) => {
              newAdmin.password_confirm = hash
             
              await newAdmin.save()
-             res.status(201).send(_.pick(newAdmin, ['name', 'email','address','phone','gender']));
+             res.status(201).send(_.pick(newAdmin, ['name', 'email','address','phone','gender','status']));
         }
        });
     }catch(err){
@@ -59,11 +55,44 @@ const admin_login = async (req, res) => {
     res.cookie('auth',token);
 
     await admin.save();
-    res.status(200).send(_.pick(admin, ['name', 'email','address','phone','gender']))
+    res.status(200).send(_.pick(admin, ['name', 'email','address','phone','gender','status']))
   }catch(err){
     return res.status(500).send({ err })
   }
 }
+
+const admin_profile = async (req, res) => {   
+  return res.status(200).send(_.pick(req.admin, ['name', 'email','address','phone','gender','status']))
+}
+
+const logout_accout = async (req, res) => {
+    try{
+      req.admin.tokens = req.admin.tokens.filter((token) => {
+        return token.token !== req.token
+      })
+      await req.admin.save()
+      res.status(200).send('logout seccesfully')
+    }catch(err){
+      console.log(err)
+      return res.status(500).send({err})
+    }
+}
+
+const logout_allaccounts = async (req, res) =>{
+  try{
+    req.admin.tokens = []
+    await req.admin.save();
+    
+    res.status(200).send('Loged out for all devices')
+  }catch(err){
+    console.log(err);
+    return res.status(500).send({err})
+  }
+}
+
+
+
+
 
 
 
@@ -96,7 +125,9 @@ function adminLogin_validation(admin){
 
 module.exports ={
     //we but inside function name to export.
-    dashboard,
     admin_create,
-    admin_login
+    admin_login,
+    admin_profile,
+    logout_accout,
+    logout_allaccounts
 }

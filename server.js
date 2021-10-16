@@ -22,7 +22,6 @@ app.use(helmet());
 app.use('/api/skills', SkillRouter);
 app.use('/api/admin', adminRoutes);
 
-
 app.listen(port, () => {
   console.log(`This server is running on port http://localhost:${port}`);
 });

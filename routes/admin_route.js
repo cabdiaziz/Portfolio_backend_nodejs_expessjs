@@ -4,5 +4,10 @@ const router = express.Router();
 //@GET dashboard API
 router.get('/', adminController.dashboard);
 
+router.post('/create', adminController.admin_create);
+
+router.post('/login', adminController.admin_login);
+
+
 
 module.exports = router;

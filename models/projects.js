@@ -27,8 +27,8 @@ const projectSchema = new mongoose.Schema(
       ref: "Admins",
       required: true,
     },
-    state: {
-      type: Boolean,
+    status: {
+      type: String,
       default: true,
     },
   },

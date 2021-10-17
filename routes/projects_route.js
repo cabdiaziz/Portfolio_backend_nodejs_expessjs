@@ -1,10 +1,7 @@
 const express = require("express");
 const ProjectController = require("../controllers/projects_controller");
-const multer = require("multer");
-
-//! Important..
-//*This routes need to connect to auth and edit it's Api
-
+const auth = require('../middleware/auth')
+const multer = require('multer');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -22,9 +19,13 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-router.get("/", ProjectController.getProjects);
-router.post("/", upload.single("image"), ProjectController.postProject);
-router.put("/:id", upload.single("image"), ProjectController.updateProject);
-router.get("/:id", ProjectController.getProjectById);
+router.post("/create", auth, upload.single("image"), ProjectController.project_create);
+
+router.get("/view_all", auth, ProjectController.view_allProjects);
+
+router.get("/view/:id", auth, ProjectController.view_ProjectById);
+
+router.patch("/update/:id", auth, upload.single("image"), ProjectController.project_update);
+
 
 module.exports = router;

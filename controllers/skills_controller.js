@@ -1,10 +1,9 @@
 const Skill = require("../models/skills")
-
 const Joi = require("joi");
 const _ = require('lodash');
-require('express-async-errors');
 
-//* is working
+
+
 const skill_create = async (req, res) => {
   const { error } = validation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -16,14 +15,13 @@ const skill_create = async (req, res) => {
 
   try {
     await skills.save()
-    res.status(201).send(skills);
+    res.status(201).send(_.pick(skills, ['name', 'level', 'about']));
   } catch (ex) {
     console.log(ex)
     for (feild in ex.errors) res.status(400).json(ex.errors[feild].message);
   }
 };
 
-//* is working
 const view_byId = async (req, res) => {
   const _id = req.params.id
   try {
@@ -53,21 +51,23 @@ const view_all = async(req, res) => {
 
 //* is working
 const skill_update = async (req, res) => {
+
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 'level','about'];
     const isValidUpdate = updates.every((update) => allowedUpdates.includes(update));
 
+    const _id = req.params.id;
+
     if(!isValidUpdate) return res.status(400).send({Error:'Invalid updates.!'})
 
     try {
-    const skill = await Skill.findOne({_id:req.params.id, person: req.admin._id })
-    if(!skill) return res.status(404).send('oops Not founded !!')
+    const skill = await Skill.findOne({_id, person: req.admin._id })
+    if(!skill) return res.status(404).send('Oops Not founded !!')
 
     updates.forEach((update) => skill[update] = req.body[update])
     await skill.save();
     res.status(200).send(skill) //*updated successfully.
   } catch (ex) {
-    console.log(ex)
     for (feild in ex.errors) res.status(400).json(ex.errors[feild].message);
   }
 };
@@ -75,7 +75,7 @@ const skill_update = async (req, res) => {
 
 //! feature Api's 
 
-//*Search
+//*Search or filter by highest to lowest
 //*delete
 
 

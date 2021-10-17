@@ -8,9 +8,9 @@ const router = express.Router();
 
 router.post('/create', auth, skillsController.skill_create);
 
-router.get('/view/:id', auth, skillsController.view_byId);
-
 router.get('/view_all', auth, skillsController.view_all);
+
+router.get('/view/:id', auth, skillsController.view_byId);
 
 router.patch('/update/:id', auth, skillsController.skill_update);
 

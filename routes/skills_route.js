@@ -1,7 +1,6 @@
 const express = require("express");
 const skillsController = require('../controllers/skills_controller');
-const auth = require('../middlewares/auth')
-require('express-async-errors');
+const auth = require('../middleware/auth')
 
 const router = express.Router();
 

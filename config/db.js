@@ -16,3 +16,4 @@ mongoose.connect(`mongodb://${host_name}/${db_name}`)
 
 require('../routes/admins_route')
 require('../routes/skills_route')
+require('../routes/projects_route')

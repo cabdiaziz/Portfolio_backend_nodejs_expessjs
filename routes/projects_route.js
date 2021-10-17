@@ -1,8 +1,10 @@
 const express = require("express");
-
 const ProjectController = require("../controllers/projects_controller");
-
 const multer = require("multer");
+
+//! Important..
+//*This routes need to connect to auth and edit it's Api
+
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {

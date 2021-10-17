@@ -1,34 +1,51 @@
 const mongoose = require("mongoose");
-const Joi = require("joi");
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
+
+require('dotenv').config();
+
+const env = process.env;
 
 const adminSchema = new mongoose.Schema(
   {
     name: {
       type: String,
+      required: true
     },
     email: {
       type: String,
       lowercase: true,
+      required: true
     },
     address: {
       type: String,
+      required: true
     },
     phone: {
       type: Number,
+      required: true
     },
     gender: {
       type: String,
+      required: true
     },
     type: {
       type: String,
       default: "admin",
     },
-    token: {
-      type: String,
-    },
+    tokens:[{
+       token:{
+            type: String,
+            required: true
+       }
+    }],
     password: {
       type: String,
       required: true,
+    },
+    password_confirm:{
+        type: String,
+        required: true,
     },
     status: {
       type: String,
@@ -38,28 +55,24 @@ const adminSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-//joi validation function.
-function create_adminValidation(admin) {
-  const schema = Joi.object({
-    name: Joi.string().min(3).max(30).required(),
-    email: Joi.string()
-      .email({ minDomainSegments: 3, tlds: { allow: ["com", "net", "so"] } })
-      .required(),
-    address: Joi.string().min(4).required(),
-    phone: Joi.number().min(6).max(10).required(),
-    gender: Joi.string().min(4).max(6).required(),
-    type: Joi.string().required(),
-    token: Joi.string().min(10),
-    status: Joi.string().min(4),
-    password: Joi.string()
-      .min(8)
-      .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
-      .required(),
-  });
-  return schema.validate(admin);
+adminSchema.methods.generateToken = async function(){
+    const newAdmin = this
+    const token = jwt.sign({ _id: newAdmin._id.toString()},env.TOKEN_KEY);
+    newAdmin.tokens = newAdmin.tokens.concat({token})
+    return token
+}
+
+adminSchema.statics.checkPassword = async (email, password) => {
+  const admin = await Admin.findOne({email})       
+      if(!admin)  return admin
+
+  const checkPassword = await bcrypt.compare(password, admin.password)
+  if(!checkPassword) {
+    return admin
+  }
+   return admin  
 }
 
 const Admin = mongoose.model("Admins", adminSchema);
 
-exports.Admin = Admin;
-exports.create_adminValidation = create_adminValidation;
+module.exports = Admin;

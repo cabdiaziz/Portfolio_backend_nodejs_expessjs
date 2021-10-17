@@ -3,6 +3,7 @@ const morgan = require("morgan");
 
 const adminRoutes = require("./routes/admin_route");
 const SkillRouter = require("./routes/SkillRoute");
+const ProjectController = require("./routes/ProjectRoute");
 require("./config/db");
 
 require("dotenv").config(); //env process.env.instance-variable.
@@ -16,6 +17,7 @@ app.use(morgan("tiny")); // called morgan.
 //my API'S from router folder
 app.use("/api/skills", SkillRouter);
 app.use("/api/admin", adminRoutes);
+app.use("/api/projects", ProjectController);
 
 app.listen(port, () => {
   console.log(`This server is running on port http://localhost:${port}`);

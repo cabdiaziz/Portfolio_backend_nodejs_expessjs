@@ -4,8 +4,8 @@ const helmet = require("helmet");
 const cookieParser = require('cookie-parser');
 require('express-async-errors');
 
-const adminRoutes = require('./routes/admin_route');
-const SkillRouter = require("./routes/SkillRoute");
+const adminRoute = require('./routes/admins_route');
+const skillRoute = require("./routes/skills_route");
 
 
 require('./config/db');
@@ -22,8 +22,8 @@ app.use(helmet());
 app.use(cookieParser());
 
 //my API'S from router folder
-app.use('/api/skills', SkillRouter);
-app.use('/api/admin', adminRoutes);
+app.use('/api/skill', skillRoute);
+app.use('/api/admin', adminRoute);
 
 app.listen(port, () => {
   console.log(`This server is running on port http://localhost:${port}`);

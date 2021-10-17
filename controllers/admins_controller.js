@@ -1,4 +1,5 @@
 const Admin = require('../models/admins')
+
 const bcrypt = require('bcryptjs')
 const _ = require('lodash')
 const Joi = require("joi");
@@ -8,7 +9,7 @@ const Joi = require("joi");
 
 const admin_create = async (req, res) => {
     const {error} = create_adminValidation(req.body);   
-    if(error) return res.status(404).send(error.details[0].message.toString())
+    if(error) return res.status(404).send(error.details[0].message)
     
     try{
        bcrypt.hash(req.body.password, 10,async(err,hash) => {
@@ -43,6 +44,7 @@ const admin_login = async (req, res) => {
     const {error} = adminLogin_validation(req.body); 
     if(error) return res.status(400).send(error.details[0].message); // test tostring function.
   try{
+    res.clearCookie('auth');
     const admin = await Admin.checkPassword(req.body.email, req.body.password);
     if(admin.status !== 'active') return res.status(401).send('Please authenticate.')
    
@@ -59,7 +61,11 @@ const admin_login = async (req, res) => {
 }
 
 const admin_profile = async (req, res) => {   
-  return res.status(200).send(_.pick(req.admin, ['name', 'email','address','phone','gender','status']))
+  try{
+      return res.status(200).send(_.pick(req.admin, ['name', 'email','address','phone','gender','status']))
+  }catch(err){
+    for (field in err.occur) res.status(400).json(err.occur[field].message);
+  }  
 }
 
 const logout_accout = async (req, res) => {
@@ -68,6 +74,7 @@ const logout_accout = async (req, res) => {
         return token.token !== req.token
       })
       await req.admin.save()
+      res.clearCookie('auth');
       res.status(200).send('logout seccesfully')
     }catch(err){
       for (field in err.occur) res.status(400).json(err.occur[field].message);
@@ -78,7 +85,8 @@ const logout_allaccounts = async (req, res) =>{
   try{
     req.admin.tokens = []
     await req.admin.save();
-    
+
+    res.clearCookie('auth');    
     res.status(200).send('Loged out for all devices')
   }catch(err){
     for (field in err.occur) res.status(400).json(err.occur[field].message);
@@ -98,6 +106,9 @@ const delete_myProfile = async (req, res) => {
 
 const update_myProfile = async (req, res) => {
 
+  const {error} = create_adminValidation(req.body);   
+  if(error) return res.status(404).send(error.details[0].message)
+  
   const updates = Object.keys(req.body)
   const allowedUpdates = ['name', 'email','address','phone','gender','type'];
   const isValidUpdate = updates.every((update) => allowedUpdates.includes(update))
@@ -114,6 +125,14 @@ const update_myProfile = async (req, res) => {
 
 
 }
+
+//!feature API'S. 
+
+//*reset password API
+//*Change password API
+
+
+ 
 
 
 

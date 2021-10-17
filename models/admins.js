@@ -55,6 +55,8 @@ const adminSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+
+
 adminSchema.methods.generateToken = async function(){
     const newAdmin = this
     const token = jwt.sign({ _id: newAdmin._id.toString()},env.TOKEN_KEY);
@@ -72,7 +74,11 @@ adminSchema.statics.checkPassword = async (email, password) => {
   }
    return admin  
 }
-
+adminSchema.virtual('myskills',{
+  ref: 'Skills',
+  localField: '_id',
+  foreignField: 'person'
+});
 const Admin = mongoose.model("Admins", adminSchema);
 
 module.exports = Admin;

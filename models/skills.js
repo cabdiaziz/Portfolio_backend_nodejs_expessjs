@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Joi = require("joi");
 
 const skillSchema = new mongoose.Schema(
   {
@@ -24,17 +23,8 @@ const skillSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const SkillModel = mongoose.model("Skill", skillSchema);
+const Skill = mongoose.model("Skills", skillSchema);
 
-function validation(skill) {
-  const schema = Joi.object({
-    name: Joi.string().required(),
-    level: Joi.number().required(),
-    about: Joi.string().required(),
-    person: Joi.string().required(),
-  });
 
-  return schema.validate(skill);
-}
 
-module.exports = { validation, SkillModel };
+module.exports =Skill;

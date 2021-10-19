@@ -6,22 +6,26 @@ const _ = require('lodash')
 
 
 const view_allProjects = async (req, res) => {
-  const project = await Project.find().sort({ name: 1 });
+  try{
+    await req.admin.populate('myProject');
+    if(req.admin.myProject == "") return res.status(404).send('You dosen\'t have any Poroject.')
 
-  res.send(project);
+    res.status(200).send(_.pick(req.admin.myProject, ['name', 'about', 'image', 'github', 'link', 'status']))
+  }catch(err){
+    console.log(err)
+    for (feild in ex.errors) res.status(400).json(ex.errors[feild].message);    
+  }
 };
 
 const project_create = async (req, res) => {
-  const image = req.file ? req.file.path : "uploads\\default.png";
   const { error } = validation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  try { 
-    const project = await new Project({
-      ...req.body,
-       image, 
-       person:req.admin._id
-    });
+  try {  //* in the feauter you allow the user insert image.
+    const project = await new Project(_.pick(project, ['name', 'about', 'github', 'link']));
+
+    project.image = req.file ? req.file.path : "uploads\\default.png";
+    project.person =req.admin._id
 
     await project.save();
     res.status(201).send(_.pick(project, ['name', 'about', 'github', 'link', 'image', 'status']));
@@ -71,7 +75,7 @@ const project_update = async (req, res) => {
 
     updates.forEach((update) => project[update] = req.body[update])
     await project.save();
-    res.send(_.pick(project,['image','name', 'about', 'github', 'link','status']));
+    res.send(_.pick(project,['name', 'about','image', 'github', 'link','status']));
   } catch (ex) {
     for (feild in ex.errors) res.status(400).json(ex.errors[feild].message);
   }

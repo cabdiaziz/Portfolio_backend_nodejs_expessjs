@@ -79,6 +79,19 @@ adminSchema.virtual('myskills',{
   localField: '_id',
   foreignField: 'person'
 });
-const Admin = mongoose.model("Admins", adminSchema);
+
+adminSchema.virtual('myProject',{
+  ref: 'Projects',
+  localField: '_id',
+  foreignField: 'person'
+});
+
+adminSchema.virtual('myEducation',{
+  ref: 'Educations',
+  localField: '_id',
+  foreignField: 'person'
+});
+
+const Admin = mongoose.model('Admins', adminSchema);
 
 module.exports = Admin;

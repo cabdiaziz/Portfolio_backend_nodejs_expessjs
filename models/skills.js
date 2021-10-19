@@ -19,6 +19,11 @@ const skillSchema = new mongoose.Schema(
       ref: "Admins",
       required: true,
     },
+    status:{
+      type: String,
+      default: 'active',
+      require: true
+    }
   },
   { timestamps: true }
 );

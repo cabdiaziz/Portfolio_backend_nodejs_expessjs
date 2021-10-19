@@ -7,6 +7,7 @@ require("express-async-errors");
 const adminRoute = require('./routes/admins_route');
 const skillRoute = require('./routes/skills_route');
 const projectRoute = require('./routes/projects_route')
+const educationRoute = require('./routes/educations_route')
 
 require("./config/db");
 
@@ -25,6 +26,7 @@ app.use(cookieParser());
 app.use('/api/admin', adminRoute);
 app.use('/api/skill', skillRoute);
 app.use('/api/project', projectRoute);
+app.use('/api/education', educationRoute);
 
 
 app.listen(port, () => {

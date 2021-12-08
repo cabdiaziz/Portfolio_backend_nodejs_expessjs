@@ -8,7 +8,10 @@ const skill_create = async (req, res) => {
   const { error } = validation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const skills = await new Skill(_.pick(...req.body, ['name', 'level', 'about']))
+  // const skills = await new Skill(_.pick(...req.body, ['name', 'level', 'about']))
+  console.log(req.body)
+
+  const skills = await new Skill(req.body)
 
   try {
     skills.person = req.admin._id

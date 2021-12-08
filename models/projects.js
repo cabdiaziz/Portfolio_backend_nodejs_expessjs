@@ -1,38 +1,35 @@
 const mongoose = require("mongoose");
-
-const projectSchema = new mongoose.Schema(
-  {
+//*this schema need a lot of update. , names, status reason and need a description column.
+const projectSchema = new mongoose.Schema({
     name: {
-      type: String,
-      required: true,
+        type: String,
+        required: true,
     },
     about: {
-      type: String,
-      required: true,
+        type: String,
+        required: true,
     },
     github: {
-      type: String,
-      required: true,
+        type: String,
+        required: true,
     },
     link: {
-      type: String,
-      required: true,
+        type: String,
+        required: true,
     },
-    image: {
-      type: String,
+    image: { //* image must be sending files.
+        type: String,
     },
     person: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Admins",
-      required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Admins",
+        required: true,
     },
     status: {
-      type: String,
-      default: true,
+        type: String,
+        default: true,
     },
-  },
-  { timestamps: true }
-);
+}, { timestamps: true });
 
 const ProjectModel = mongoose.model("Projects", projectSchema);
 

@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-
-
+//* qestion about person name can it changed into 'user'.
 const educationSchema = new mongoose.Schema({
     name: {
         type: String,

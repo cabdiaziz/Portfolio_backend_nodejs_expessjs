@@ -1,13 +1,13 @@
 const express = require('express');
-const userController = require('../controllers/admins_controller');
+const userController = require('../controllers/user_controller');
 const auth = require('../middleware/auth')
 const router = express.Router();
 
-router.post('/create', userController.admin_create);
+router.post('/create', userController.user_create);
 
-router.post('/login', userController.admin_login);
+router.post('/login', userController.user_login);
 
-router.get('/myProfile', auth, userController.admin_profile);
+router.get('/myProfile', auth, userController.user_profile);
 
 router.post('/logout', auth, userController.logout_accout);
 

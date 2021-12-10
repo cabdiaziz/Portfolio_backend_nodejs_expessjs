@@ -1,4 +1,4 @@
-const Admin = require('../models/admins')
+const User = require('../models/users')
 const jwt = require('jsonwebtoken')
 const _ = require('lodash')
 require("dotenv").config();
@@ -10,11 +10,11 @@ module.exports = async function(req, res, next) {
         if (!token) throw new Error();
 
         const decodeToken = jwt.verify(token, env.TOKEN_KEY)
-        const admin = await Admin.findOne({ _id: decodeToken._id, 'tokens.token': token })
-        if (!admin) throw new Error();
+        const user = await User.findOne({ _id: decodeToken._id, 'tokens.token': token })
+        if (!user) throw new Error();
 
         req.token = token
-        req.admin = admin
+        req.user = user
         next()
     } catch (e) {
         return res.status(401).send('Please authenticate.')

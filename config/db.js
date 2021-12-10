@@ -9,7 +9,7 @@ mongoose.connect(env.MONGODB_URL)
 
 //! u must require all our routes.
 
-require('../routes/admins_route')
+require('../routes/user_route')
 require('../routes/skills_route')
 require('../routes/projects_route')
 require('../routes/educations_route')

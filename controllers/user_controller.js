@@ -1,16 +1,16 @@
-const Admin = require('../models/users')
+const User = require('../models/users')
 
 const bcrypt = require('bcryptjs')
 const _ = require('lodash')
 
 //require validation file
-const { create_adminValidation, adminLogin_validation, updateUserValidation } = require('../validations/validation')
+const { create_userValidation, userLogin_validation, updateUserValidation } = require('../validations/validation')
 
 
 //Auth Api functions.
 
-const admin_create = async(req, res) => {
-    const { error } = create_adminValidation(req.body);
+const user_create = async(req, res) => {
+    const { error } = create_userValidation(req.body);
     if (error) return res.status(404).send(error.details[0].message)
 
     try {
@@ -18,23 +18,23 @@ const admin_create = async(req, res) => {
             if (err) {
                 return res.status(500).send({ err });
             } else {
-                const admin = await Admin.findOne({ email: req.body.email })
-                if (admin) return res.status(409).send({ msg: 'user is already created.' })
+                const user = await User.findOne({ email: req.body.email })
+                if (user) return res.status(409).send({ msg: 'user is already created.' })
 
-                const newAdmin = await new Admin(_.pick(req.body, ['name', 'email', 'address', 'phone', 'gender', 'password', 'password_confirm']));
+                const newUser = await new User(_.pick(req.body, ['name', 'email', 'address', 'phone', 'gender', 'password', 'password_confirm']));
 
-                const token = await newAdmin.generateToken();
+                const token = await newUser.generateToken();
                 console.log('tokenCREATE=', token) //New token generated.
                 res.cookie('auth', token); //sending token via cookies.             
 
                 if (req.body.password !== req.body.password_confirm)
                     return res.status(400).send({ errMsg: 'confirm must match password' })
 
-                newAdmin.password = hash
-                newAdmin.password_confirm = newAdmin.password;
+                newUser.password = hash
+                newUser.password_confirm = newUser.password;
 
-                await newAdmin.save()
-                res.status(201).send(_.pick(newAdmin, ['name', 'email', 'address', 'phone', 'gender', 'status']));
+                await newUser.save()
+                res.status(201).send(_.pick(newUser, ['name', 'email', 'address', 'phone', 'gender', 'status']));
             }
         });
     } catch (err) {
@@ -42,29 +42,29 @@ const admin_create = async(req, res) => {
     }
 }
 
-const admin_login = async(req, res) => {
-    const { error } = adminLogin_validation(req.body);
+const user_login = async(req, res) => {
+    const { error } = userLogin_validation(req.body);
     if (error) return res.status(400).send(error.details[0].message); // test tostring function.
     try {
         res.clearCookie('auth');
-        const admin = await Admin.checkPassword(req.body.email, req.body.password);
-        if (admin.status !== 'active') return res.status(401).send('Please authenticate.')
+        const user = await User.checkPassword(req.body.email, req.body.password);
+        if (user.status !== 'active') return res.status(401).send('Please authenticate.')
 
-        if (!admin) return res.status(401).send('invalid email or password')
+        if (!user.password) return res.status(401).send('invalid email or password')
 
-        const token = await admin.generateToken();
+        const token = await user.generateToken();
         res.cookie('auth', token);
 
-        await admin.save();
-        res.status(200).send(_.pick(admin, ['name', 'email', 'address', 'phone', 'gender', 'status']))
+        await user.save();
+        res.status(200).send(_.pick(user, ['name', 'email', 'address', 'phone', 'gender', 'status']))
     } catch (err) {
         for (field in err.occur) res.status(400).json(err.occur[field].message);
     }
 }
 
-const admin_profile = async(req, res) => {
+const user_profile = async(req, res) => {
     try {
-        return res.status(200).send(_.pick(req.admin, ['name', 'email', 'address', 'phone', 'gender', 'status']))
+        return res.status(200).send(_.pick(req.user, ['name', 'email', 'address', 'phone', 'gender', 'status']))
     } catch (err) {
         for (field in err.occur) res.status(400).json(err.occur[field].message);
     }
@@ -72,10 +72,10 @@ const admin_profile = async(req, res) => {
 
 const logout_accout = async(req, res) => {
     try {
-        req.admin.tokens = req.admin.tokens.filter((token) => {
+        req.user.tokens = req.user.tokens.filter((token) => {
             return token.token !== req.token
         })
-        await req.admin.save()
+        await req.user.save()
         res.clearCookie('auth');
         res.status(200).send('logout seccesfully')
     } catch (err) {
@@ -85,8 +85,8 @@ const logout_accout = async(req, res) => {
 
 const logout_allaccounts = async(req, res) => {
     try {
-        req.admin.tokens = []
-        await req.admin.save();
+        req.user.tokens = []
+        await req.user.save();
 
         res.clearCookie('auth');
         res.status(200).send('Loged out for all devices')
@@ -99,9 +99,9 @@ const logout_allaccounts = async(req, res) => {
 const delete_myProfile = async(req, res) => {
     try {
         //* not allowed to delete admin accoutn.
-        if (!req.admin.type === 'admin') return res.status(400).send('Unable to delete an admin Account!!..')
+        if (!req.user.type === 'admin') return res.status(400).send('Unable to delete an admin Account!!..')
 
-        await req.admin.remove()
+        await req.user.remove()
             .then(() => res.status(200).send('Your accout has been deleted successfully'))
             .catch(err => console.log(err))
     } catch (err) {
@@ -121,9 +121,9 @@ const update_myProfile = async(req, res) => {
     if (!isValidUpdate) return res.status(400).send({ Error: 'Invalid updates.!' })
 
     try {
-        updates.forEach((update) => req.admin[update] = req.body[update])
-        await req.admin.save()
-        res.status(200).send(req.admin)
+        updates.forEach((update) => req.user[update] = req.body[update])
+        await req.user.save()
+        res.status(200).send(req.user)
     } catch (err) {
         for (field in err.occur) res.status(400).json(err.occur[field].message);
     }
@@ -137,9 +137,9 @@ const update_myProfile = async(req, res) => {
 
 module.exports = {
     //we but inside function name to export.
-    admin_create,
-    admin_login,
-    admin_profile,
+    user_create,
+    user_login,
+    user_profile,
     logout_accout,
     logout_allaccounts,
     delete_myProfile,

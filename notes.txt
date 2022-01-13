@@ -1,0 +1,27 @@
+///////////////Backend/////////////////////
+-create a test for all api's that
+
+-updating the api
+-update the models of application == Done
+-adding a validations into Schema == Done
+
+-update the user schema and adding a eccryption password method before saved it.
+
+-adding OAuth into userers schema.
+-adding pagination.
+
+-adding upload image from user.
+
+-adding Id for our user and sckills schema by using counter schema.
+-add an authorization middleware.
+
+
+=push it into Github with private repo.
+
+=implement the integration tests // setup the github actions.
+
+=deploye it into heroku.
+
+///////////Front-End////////////
+
+-get a great design for fornt-end.

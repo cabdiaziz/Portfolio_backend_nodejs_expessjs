@@ -7,6 +7,7 @@ const projectSchema = new mongoose.Schema({
     },
     about: {
         type: String,
+        trim: true,
         required: true,
     },
     github: {
@@ -17,12 +18,13 @@ const projectSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    image: { //* image must be sending files.
+    image: {
+        //* image must be sending files.
         type: String,
     },
     person: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Admins",
+        ref: "Users",
         required: true,
     },
     status: {

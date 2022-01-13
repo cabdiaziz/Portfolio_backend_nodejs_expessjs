@@ -6,10 +6,10 @@ const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
 require("express-async-errors");
 
-const userRoute = require('./routes/user_route');
-const skillRoute = require('./routes/skills_route');
-const projectRoute = require('./routes/projects_route')
-const educationRoute = require('./routes/educations_route')
+const userRoute = require("./routes/user_route");
+const skillRoute = require("./routes/skills_route");
+const projectRoute = require("./routes/projects_route");
+const educationRoute = require("./routes/educations_route");
 
 require("./config/db");
 
@@ -21,9 +21,9 @@ app.use(helmet());
 app.use(cookieParser());
 
 //my API'S from router folder
-app.use('/api/admin', userRoute);
-app.use('/api/skill', skillRoute);
-app.use('/api/project', projectRoute);
-app.use('/api/education', educationRoute);
+app.use("/api/user", userRoute);
+app.use("/api/skill", skillRoute);
+app.use("/api/project", projectRoute);
+app.use("/api/education", educationRoute);
 
-module.exports = app
+module.exports = app;

@@ -82,7 +82,7 @@ const user_login = async(req, res) => {
 
         const token = await user.generateToken();
         res.cookie("auth", token);
-
+        //why i save this user after login, i think b/c to save the token.
         await user.save();
         res
             .status(200)
@@ -167,7 +167,7 @@ const update_myProfile = async(req, res) => {
         "address",
         "phone",
         "gender",
-        "type",
+        "role",
     ];
     const isValidUpdate = updates.every((update) =>
         allowedUpdates.includes(update)
@@ -189,7 +189,7 @@ const update_myProfile = async(req, res) => {
 
 //*reset password API
 //*Change password API
-
+//*Connect to the firebase API for authentication
 module.exports = {
     //we but inside function name to export.
     user_create,
